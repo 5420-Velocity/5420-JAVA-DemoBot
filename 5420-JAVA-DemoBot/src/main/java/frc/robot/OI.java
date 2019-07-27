@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import frc.robot.helpers.ButtonDebouncer;
 import frc.robot.helpers.ButtonToggle;
 import frc.robot.helpers.console;
+import frc.robot.helpers.controllers.DPad;
 import frc.robot.helpers.controllers.DPadButton;
 import frc.robot.helpers.controllers.DPadButtonDebouce;
 import frc.robot.helpers.controllers.LogitechMap_X;
@@ -45,6 +46,7 @@ public class OI {
     public static final double LimelightKA = 2.5409;
 
     public static Joystick driver;
+    public static DPad driverDPad;
     public static JoystickButton inputGrabberToggle;
     public static JoystickButton autoTurnCtrl;
     public static Joystick operator;
@@ -149,6 +151,7 @@ public class OI {
         limitLower.setDefaultBoolean(false);
 
         driver = new Joystick(Robot.DRIVER);
+        driverDPad = new DPad(driver);
         operator = new Joystick(Robot.OPERATOR);
 
         //// Create Buttons ////

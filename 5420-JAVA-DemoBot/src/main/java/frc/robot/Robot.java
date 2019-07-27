@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
     Robot.left2 = new WPI_TalonSRX(54);
     Robot.left2.follow(Robot.left1);
 
-    Robot.Left3 = new WPI_TalonSRX(add id);
+    Robot.left3 = new WPI_TalonSRX(0);
     Robot.left3.follow(Robot.left1);
 
     // Right SIDE Control
@@ -104,7 +104,7 @@ public class Robot extends TimedRobot {
     Robot.right2 = new WPI_TalonSRX(57);
     Robot.right2.follow(Robot.right1);
 
-    Robot.right3 = new WPI_TalonSRX(add id);
+    Robot.right3 = new WPI_TalonSRX(0);
     Robot.right3.follow(Robot.right1);
 
     // Build a full Differental Drive
@@ -137,9 +137,6 @@ public class Robot extends TimedRobot {
     //m_drive.setSafetyEnabled(true); // Disable Watchdog auto stop
 
     // Save.getInstance().push("Test", false);
-
-    limelightMain = new Limelight("limelight-one");
-    limelightMain.setDistanceControl(OI.LimelightKD, OI.LimelightKA);
 
     console.allowLog = logMode.kOff;
 
@@ -420,6 +417,35 @@ public class Robot extends TimedRobot {
       ballIntake.set(0);
       
     }
+
+    //////////////////
+    //  WIFFLE CTRL //
+    //////////////////
+
+    //Shoot
+    if(OI.operator.getRawButton(LogitechMap_X.BUTTON_LB)){
+      wiffleShoot.set(0.5);
+    }
+    else if(OI.operator.getRawButton(LogitechMap_X.BUTTON_RB)){
+      wiffleShoot.set(-0.5);
+    }
+    else{
+      wiffleShoot.set(0);
+    }
+
+    //Aim
+    if(OI.driverDPad.up()){
+      wiffleAim.set(0.5);
+    }
+    
+    else if(OI.driverDPad.down()){
+      wiffleAim.set(-0.5);
+    }
+    else{
+      wiffleAim.set(0);
+    }
+
+
 
     //////////////////
     //  SHIFT CTRL  //
