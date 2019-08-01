@@ -154,6 +154,7 @@ public class Robot extends TimedRobot {
 
       Robot.logInterval = 0;
     }
+    
 
     // Push Sensor Values
     OI.leftEncoder.setNumber(Robot.leftEncoder.get());
@@ -233,107 +234,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     
-    Robot.gameData = window.getData();
-    Robot.autoCommand = new CommandGroup();
-
-    /////////////////////
-    ////// STAGE 1 //////
-    /////////////////////
-
-    // Add Time Delay for a User Input
-    Robot.autoCommand.addSequential( new Delay(OI.autoDelay.getNumber(0)) );
-
-    //////////////////////////////////
-    // If Position is Left / Right  //
-    //////////////////////////////////
-    if(OI.position.get() == 1 || OI.position.get() == 3){
-      console.log("POS 1 || POS 3");
-
-
-      // Level 1
-      if(OI.level.get() == 1){
-        console.log("LEVEL 1");
-
-        // Drive
-        Robot.autoCommand.addSequential( new AutoDrive(Robot.m_drive, 0.5,  2000) );
-
-      }
-
-      // Level 2
-      else if(OI.level.get() == 2){
-        console.log("LEVEL 2");
-
-        //drive
-        Robot.autoCommand.addSequential( new AutoDrive(Robot.m_drive, 0.5, 3000));
-
-      }
-
-    }
-
-    ///////////////////////////
-    // If Position is Center //
-    ///////////////////////////
-
-    else if(OI.position.get() == 2){
-
-      console.log("POS 2");
-
-      // Level 1
-      if(OI.level.get() == 1){
-        console.log("LEVEL 1");
-
-        // Drive
-        Robot.autoCommand.addSequential( new AutoDrive(Robot.m_drive, 0.5, 800));
-
-      }
-
-    }
-
-    /////////////////////
-    ////// STAGE 2 //////
-    /////////////////////
-
-    if(OI.target.get() == OI.Target.None){
-
-    }
-    else if(OI.target.get() == OI.Target.Face){
-      console.log("TARGET: FACE");
-
-      Robot.autoCommand.addSequential(new AutoDrive(Robot.m_drive, 0.5, 4000));
-      Robot.autoCommand.addSequential(new AutoTurn(Robot.m_drive, Robot.pigeon, 0.5, 90));
-      Robot.autoCommand.addSequential(new AutoDrive(Robot.m_drive, 0.5, 2500));
-      Robot.autoCommand.addSequential(new AutoTurn(Robot.m_drive, Robot.pigeon, 0.5, -90));
-
-    }
-    else if(OI.target.get() == OI.Target.Side){
-      console.log("TARGET: SIDE");
-
-      Robot.autoCommand.addSequential(new AutoDrive(Robot.m_drive, 0.5, 1000));
-    }
-
-    /////////////////////
-    ////// STAGE 3 //////
-    /////////////////////
-
-    if(OI.target.get() == OI.Target.Face){
-
-      console.log("TARGET: FACE (3)");
-
-      Robot.autoCommand.addSequential( new AutoDrive(Robot.m_drive, 0.5, 500));
-      Robot.autoCommand.addSequential( new SolenoidAuto(Robot.hatchSol, Value.kReverse));
-    }
-    else if(OI.target.get() == OI.Target.Side){
-      console.log("TARGET: SIDE (3)");
-
-      Robot.autoCommand.addSequential( new SolenoidAuto(Robot.hatchSol, Value.kForward));
-    }
-
-    // Robot Auto Command Drive Controls
-    //Robot.autoCommand.addSequential(new AutoDrive(m_drive, 0.5, 0, 10));
-
-    // Add to Stack
-    Scheduler.getInstance().add(Robot.autoCommand);
-    
   }
 
   @Override
@@ -360,6 +260,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+
     Scheduler.getInstance().run();
 
     if(OI.driver.getRawButton(LogitechMap_X.BUTTON_A)){
@@ -460,7 +361,7 @@ public class Robot extends TimedRobot {
     //////////////////
     double DRIVE_Y = (OI.driver.getRawAxis(LogitechMap_X.AXIS_LEFT_Y));
     double DRIVE_X = (-OI.driver.getRawAxis(LogitechMap_X.AXIS_RIGHT_X));
-    DRIVE_Y = RobotOrientation.getInstance().fix(DRIVE_Y, Side.kSideB);
+    DRIVE_Y = RobotOrientation.getInstance().fix(DRIVE_Y, Side.kSideA);
 
     if(OI.driveSlowForward.get()){
       // Button Mode Forward
@@ -485,14 +386,12 @@ public class Robot extends TimedRobot {
       console.out(logMode.kDebug, "Slow Right");
       DRIVE_Y = 0;
       DRIVE_X = -0.6;
-      ;
     }
     else {
       // Joystick Mode
       DRIVE_Y = DRIVE_Y*0.90;
       DRIVE_X = DRIVE_X*0.90;
       m_drive.feed();
-
     }
 
     ////////////////////////
@@ -511,6 +410,7 @@ public class Robot extends TimedRobot {
       OI.cameraView.setNumber(0);
       OI.cameraViewText.setString("BALL");
     }
+    Robot.m_drive.arcadeDrive( DRIVE_Y, DRIVE_X );
    
     double controlArm = -OI.operator.getRawAxis(LogitechMap_X.AXIS_LEFT_Y);
     if(controlArm > 0){
