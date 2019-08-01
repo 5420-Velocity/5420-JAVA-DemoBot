@@ -17,8 +17,6 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Ultrasonic;
 import edu.wpi.first.wpilibj.VictorSP;
 import edu.wpi.first.wpilibj.Watchdog;
-import edu.wpi.first.wpilibj.Watchdog;
-import edu.wpi.first.wpilibj.Watchdog;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.command.CommandGroup;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -55,7 +53,6 @@ public class Robot extends TimedRobot {
   public static DoubleSolenoid transSol; // Put Solenoid to the Close State
   public static PigeonGyro pigeon;
 
-  public static Ultrasonic frontSide;
   public static DigitalInput ballLoaded, ballUpperLimit, ballLowerLimit;
   public static DoubleSolenoid hatchSol; // Put Solenoid to the Open State
   public static Encoder leftEncoder, rightEncoder;
@@ -95,7 +92,7 @@ public class Robot extends TimedRobot {
     Robot.left2 = new WPI_TalonSRX(54);
     Robot.left2.follow(Robot.left1);
 
-    Robot.left3 = new WPI_TalonSRX(0);
+    Robot.left3 = new WPI_TalonSRX(53);
     Robot.left3.follow(Robot.left1);
 
     // Right SIDE Control
@@ -104,7 +101,7 @@ public class Robot extends TimedRobot {
     Robot.right2 = new WPI_TalonSRX(57);
     Robot.right2.follow(Robot.right1);
 
-    Robot.right3 = new WPI_TalonSRX(0);
+    Robot.right3 = new WPI_TalonSRX(55);
     Robot.right3.follow(Robot.right1);
 
     // Build a full Differental Drive
@@ -163,7 +160,6 @@ public class Robot extends TimedRobot {
     OI.rightEncoder.setNumber(Robot.rightEncoder.get());
     OI.ballSwitch.setBoolean(Robot.ballLoaded.get());
     OI.gyro.setNumber(Robot.pigeon.getAngle());
-    OI.distanceFront.setNumber(Robot.frontSide.getRangeInches());
     OI.ballUppwerLimit.setBoolean(ballUpperLimit.get());
     OI.ballLowerLimit.setBoolean(ballLowerLimit.get());
 
