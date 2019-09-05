@@ -29,7 +29,7 @@ import frc.robot.helpers.RobotOrientation.Side;
 import frc.robot.helpers.console.logMode;
 import frc.robot.helpers.controllers.*;
 import frc.robot.commands.*;
-import frc.robot.user.commands.*;
+
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
@@ -51,12 +51,11 @@ public class Robot extends TimedRobot {
   public static WPI_TalonSRX right1, right2, right3; // Right Side Motors
   public static WPI_TalonSRX test;
   public static DoubleSolenoid transSol; // Put Solenoid to the Close State
-  public static PigeonGyro pigeon;
 
   public static DigitalInput ballLoaded, ballUpperLimit, ballLowerLimit;
-  public static DoubleSolenoid hatchSol; // Put Solenoid to the Open State
+  public static Solenoid liftSol; // Put Solenoid to the Open State
   public static Encoder leftEncoder, rightEncoder;
-  public static VictorSP motorTilt, ballIntake, wiffleAim, wiffleShoot;
+  public static VictorSP ballIntake, wiffleAim, wiffleShoot2, wiffleShoot;
 
   public static Compressor compressor;
   public static CommandGroup autoCommand;
@@ -107,22 +106,23 @@ public class Robot extends TimedRobot {
     // Build a full Differental Drive
     Robot.m_drive = new DifferentialDrive(Robot.left1, Robot.right1);
 
-    Robot.pigeon = new PigeonGyro(left1);
+   
 
     leftEncoder = new Encoder(4, 5);
     rightEncoder = new Encoder(6, 7);
 
 
     transSol = new DoubleSolenoid(4, 5);
+    liftSol = new Solenoid (2);
 
     ballLoaded = new DigitalInput(9);
     ballUpperLimit = new DigitalInput(10);
     ballLowerLimit = new DigitalInput(11);
 
-    motorTilt = new VictorSP(4);
+    wiffleShoot2 = new VictorSP(5);
     wiffleAim = new VictorSP(3);
     wiffleShoot = new VictorSP(2);
-    ballIntake = new VictorSP(5);
+    ballIntake = new VictorSP(4);
 
     compressor = new Compressor(0);
 
@@ -160,14 +160,12 @@ public class Robot extends TimedRobot {
     OI.leftEncoder.setNumber(Robot.leftEncoder.get());
     OI.rightEncoder.setNumber(Robot.rightEncoder.get());
     OI.ballSwitch.setBoolean(Robot.ballLoaded.get());
-    OI.gyro.setNumber(Robot.pigeon.getAngle());
     OI.ballUppwerLimit.setBoolean(ballUpperLimit.get());
     OI.ballLowerLimit.setBoolean(ballLowerLimit.get());
 
     //OI.boschEncoder.setNumber(Robot.bTest.encoderGet());
 
     if(OI.reset.getBoolean(false)){
-      Robot.pigeon.reset();
       OI.reset.setBoolean(false);
     }
 
@@ -221,13 +219,6 @@ public class Robot extends TimedRobot {
   public void testPeriodic() {
 
     Scheduler.getInstance().run();
-
-    if(SmartDashboard.getBoolean("Sol", false) == false){
-      hatchSol.set(DoubleSolenoid.Value.kForward);
-    }
-    else {
-      hatchSol.set(DoubleSolenoid.Value.kReverse);
-    }
 
   }
 
@@ -284,35 +275,25 @@ public class Robot extends TimedRobot {
     //  BALL CTRL   //
     //////////////////
     // Ball Intake Control using Buttons
-    if(OI.driver.getRawButton(LogitechMap_X.BUTTON_LB)){
+    if(OI.operator.getRawAxis(LogitechMap_X.AXIS_RT) > 0.2){
       // Ball In
       if(Robot.ballLoaded.get() == false){
-
         ballIntake.set(-0.5);
-        
       }
+      
       else {
         console.log("Ball Loaded, Auto Stop");
         // Ball Off
         ballIntake.set(0);
-        
-        if(liftOnce == false){
-          // Disabled since the button in the lift was too sensitive.
-         //m Scheduler.getInstance().add( new MotorDriveLimit(Robot.motorTilt, 0.8, 2000, ballUpperLimit, "") );
-          liftOnce = true;
-        }
       }
     }
-    else if(OI.driver.getRawButton(LogitechMap_X.BUTTON_RB)){
+    else if(OI.operator.getRawButton(LogitechMap_X.BUTTON_RB)){
       // Ball Out
       ballIntake.set(0.8);
-      
-      liftOnce = false;
     }
     else {
       // Ball Off
       ballIntake.set(0);
-      
     }
 
     //////////////////
@@ -321,28 +302,36 @@ public class Robot extends TimedRobot {
 
     //Shoot
     if(OI.operator.getRawButton(LogitechMap_X.BUTTON_LB)){
-      wiffleShoot.set(0.5);
-    }
-    else if(OI.operator.getRawButton(LogitechMap_X.BUTTON_RB)){
-      wiffleShoot.set(-0.5);
+      wiffleShoot.set(0.87);
+      wiffleShoot2.set(-0.87);
     }
     else{
       wiffleShoot.set(0);
+      wiffleShoot2.set(0);
     }
 
     //Aim
-    if(OI.driverDPad.up()){
+    if(OI.operator.getRawAxis(LogitechMap_X.AXIS_LEFT_Y) >= 0.2){
       wiffleAim.set(0.5);
     }
-    
-    else if(OI.driverDPad.down()){
+
+    else if(OI.operator.getRawAxis(LogitechMap_X.AXIS_LEFT_Y) <= -0.2){
       wiffleAim.set(-0.5);
     }
     else{
       wiffleAim.set(0);
     }
 
+    ///////////////////
+    ///  Ball lift  ///
+    ///////////////////
 
+    if(OI.operator.getRawAxis(LogitechMap_X.AXIS_RIGHT_Y) < 0.8){
+      liftSol.set(false);
+    }
+    else{
+      liftSol.set(true);
+    }
 
     //////////////////
     //  SHIFT CTRL  //
@@ -411,49 +400,6 @@ public class Robot extends TimedRobot {
       OI.cameraViewText.setString("BALL");
     }
     Robot.m_drive.arcadeDrive( DRIVE_Y, DRIVE_X );
-   
-    double controlArm = -OI.operator.getRawAxis(LogitechMap_X.AXIS_LEFT_Y);
-    if(controlArm > 0){
-      if(ballUpperLimit.get() != true){
-        // Allow if button is true, Wired for Cut Wire Saftey
-        controlArm = 0;
-      }
-      else{
-        // Limit the Up to %50 max power
-        controlArm = controlArm*0.5;
-      }
-    }
-    else if (controlArm > 0){
-      Robot.motorTilt.set(0);
-    }
-    else {
-      // Limit the Down to 85% max power
-      controlArm = controlArm*0.85;
-    }
-
-    if(Locker.isLocked("controlArm") == false){
-      Robot.motorTilt.set(controlArm);
-    }
-    else {
-      if(controlArm != 0){
-        console.log("User Control Ignored, Locked");
-      }
-    }
-
-
-    //////////////////////
-    //// Lift Control ////
-    //////////////////////
-    if(OI.liftTop.get()){
-      console.out(logMode.kDebug, "Top");
-    }
-    else if(OI.liftMid.get() || OI.liftMidAlt.get()){
-      console.out(logMode.kDebug, "Mid");
-    }
-    else if(OI.liftBottom.get()){
-      console.out(logMode.kDebug, "Bottom");
-    }
-
   }
   
 
