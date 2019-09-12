@@ -348,8 +348,8 @@ public class Robot extends TimedRobot {
     //////////////////
     //  DRIVE CTRL  //
     //////////////////
-    double DRIVE_Y = (OI.driver.getRawAxis(LogitechMap_X.AXIS_LEFT_Y));
-    double DRIVE_X = (-OI.driver.getRawAxis(LogitechMap_X.AXIS_RIGHT_X));
+    double DRIVE_Y = (OI.driver.getRawAxis(Aviator.AXIS_Y));
+    double DRIVE_X = (-OI.driver.getRawAxis(Aviator.AXIS_ROTATE));
     DRIVE_Y = RobotOrientation.getInstance().fix(DRIVE_Y, Side.kSideA);
 
     if(OI.driveSlowForward.get()){
