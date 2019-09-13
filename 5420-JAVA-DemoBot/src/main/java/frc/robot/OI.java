@@ -45,7 +45,8 @@ public class OI {
     public static final double LimelightKD = 4;
     public static final double LimelightKA = 2.5409;
 
-    public static Joystick driver;
+    public static Joystick driverR;
+    public static Joystick driverL;
     public static DPad driverDPad;
     public static JoystickButton inputGrabberToggle;
     public static JoystickButton autoTurnCtrl;
@@ -114,7 +115,7 @@ public class OI {
 
 
         // Put Some buttons on the SmartDashboard and get the Table Entries
-        tableInstance = NetworkTableInstance.getDefault(); // Get the Driver Station Network Table Instance.
+        tableInstance = NetworkTableInstance.getDefault(); // Get the driverR Station Network Table Instance.
         table = tableInstance.getTable("SmartDashboard"); // Add the a table just for Sensor Data.
         cameraView = table.getEntry("camView");
         cameraViewText = table.getEntry("camViewText");
@@ -150,32 +151,33 @@ public class OI {
         limitUpper.setDefaultBoolean(false);
         limitLower.setDefaultBoolean(false);
 
-        driver = new Joystick(Robot.DRIVER);
-        driverDPad = new DPad(driver);
+        driverR = new Joystick(Robot.DRIVERR);
+        driverL = new Joystick(Robot.DRIVERL);
+        driverDPad = new DPad(driverR);
         operator = new Joystick(Robot.OPERATOR);
 
         //// Create Buttons ////
 
-        driver.setRumble(RumbleType.kLeftRumble, 0);
-        directionSwitch = new ButtonDebouncer(driver, LogitechMap_X.BUTTON_B, 0.8);
-        transButtonHigh = new ButtonDebouncer(driver, LogitechMap_X.BUTTON_Y, 0.8); // High Range
-        transButtonLow = new ButtonDebouncer(driver, LogitechMap_X.BUTTON_X, 0.8);  // Low Range
+        driverR.setRumble(RumbleType.kLeftRumble, 0);
+        directionSwitch = new ButtonDebouncer(driverR, LogitechMap_X.BUTTON_B, 0.8);
+        transButtonHigh = new ButtonDebouncer(driverR, LogitechMap_X.BUTTON_Y, 0.8); // High Range
+        transButtonLow = new ButtonDebouncer(driverR, LogitechMap_X.BUTTON_X, 0.8);  // Low Range
 
-        inputGrabberToggle = new JoystickButton(driver, LogitechMap_X.BUTTON_A);
+        inputGrabberToggle = new JoystickButton(driverR, LogitechMap_X.BUTTON_A);
         //hatchButton = new Button(operator, LogitechMap_X.BUTTON_A);
         hatchButton = new JoystickButton(operator, LogitechMap_X.BUTTON_A);
         hatchButtonOut = new JoystickButton(operator, LogitechMap_X.BUTTON_Y);
-        autoTurnCtrl = new JoystickButton(driver, LogitechMap_X.BUTTON_A);
+        autoTurnCtrl = new JoystickButton(driverR, LogitechMap_X.BUTTON_A);
 
         liftTop = new DPadButtonDebouce(operator, DPadButton.Direction.Up);
         liftBottom = new DPadButtonDebouce(operator, DPadButton.Direction.Down);
         liftMid = new DPadButtonDebouce(operator, DPadButton.Direction.Right);
         liftMidAlt = new DPadButtonDebouce(operator, DPadButton.Direction.Left);
 
-        driveSlowForward = new DPadButton(driver, DPadButton.Direction.Up);
-        driveSlowReverse = new DPadButton(driver, DPadButton.Direction.Down);
-        driveSlowLeft = new DPadButton(driver, DPadButton.Direction.Left);
-        driveSlowRight = new DPadButton(driver, DPadButton.Direction.Right);
+        driveSlowForward = new DPadButton(driverR, DPadButton.Direction.Up);
+        driveSlowReverse = new DPadButton(driverR, DPadButton.Direction.Down);
+        driveSlowLeft = new DPadButton(driverR, DPadButton.Direction.Left);
+        driveSlowRight = new DPadButton(driverR, DPadButton.Direction.Right);
 
         //// Configure Controls ////
 

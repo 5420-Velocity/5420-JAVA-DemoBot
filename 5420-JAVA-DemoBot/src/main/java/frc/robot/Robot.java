@@ -68,8 +68,9 @@ public class Robot extends TimedRobot {
 
   public static NetworkTableEntryStore tableIndex;
 
-  public static int DRIVER = 0;
-  public static int OPERATOR = 1;
+  public static int DRIVERR = 0;
+  public static int DRIVERL = 1;
+  public static int OPERATOR = 2;
   public static int CTRL_LOG_INTERVAL = 40*4;
 
   public static boolean liftOnce = false;
@@ -149,7 +150,7 @@ public class Robot extends TimedRobot {
 
     Robot.logInterval++;
     if(logInterval % CTRL_LOG_INTERVAL == 0){
-      Logger.pushCtrlValues("Driver", OI.driver);
+      Logger.pushCtrlValues("Driver", OI.driverR);
       Logger.pushCtrlValues("Operator", OI.operator);
 
       Robot.logInterval = 0;
@@ -254,7 +255,7 @@ public class Robot extends TimedRobot {
 
     Scheduler.getInstance().run();
 
-    if(OI.driver.getRawButton(LogitechMap_X.BUTTON_A)){
+    if(OI.driverR.getRawButton(LogitechMap_X.BUTTON_A)){
       // Add Code to run the robot.
       //Scheduler.getInstance().add();
 
@@ -348,9 +349,10 @@ public class Robot extends TimedRobot {
     //////////////////
     //  DRIVE CTRL  //
     //////////////////
-    double DRIVE_Y = (OI.driver.getRawAxis(Aviator.AXIS_Y));
-    double DRIVE_X = (-OI.driver.getRawAxis(Aviator.AXIS_ROTATE));
+    double DRIVE_Y = (OI.driverR.getRawAxis(Aviator.AXIS_Y));
+    double DRIVE_X = (-OI.driverL.getRawAxis(Aviator.AXIS_Y));
     DRIVE_Y = RobotOrientation.getInstance().fix(DRIVE_Y, Side.kSideA);
+    DRIVE_X = RobotOrientation.getInstance().fix(DRIVE_X, Side.kSideB);
 
     if(OI.driveSlowForward.get()){
       // Button Mode Forward
@@ -399,7 +401,7 @@ public class Robot extends TimedRobot {
       OI.cameraView.setNumber(0);
       OI.cameraViewText.setString("BALL");
     }
-    Robot.m_drive.arcadeDrive( DRIVE_Y, DRIVE_X );
+    Robot.m_drive.tankDrive( DRIVE_Y, DRIVE_X );
   }
   
 
